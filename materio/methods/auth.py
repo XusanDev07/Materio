@@ -84,7 +84,6 @@ def user_delete(request, params):
 
 
 def StepOne(request, params):
-
     not_data = 'phone' if 'phone' not in params else ''
 
     if not_data:
@@ -161,4 +160,3 @@ def StepTwo(request, params):
     user = User.objects.filter(phone=token.phone).first()
 
     return custom_response(True, message={"is_registered": user is not None})
-
