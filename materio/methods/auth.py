@@ -108,8 +108,6 @@ def user_update(request, params):
     return custom_response(True, message={"Succes": "User update qilindi"})
 
 
-
-
 def user_delete(request, params):
     request.user.delete()
     return custom_response(True, message=MESSAGE['UserSuccessDeleted'])
