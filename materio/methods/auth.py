@@ -71,11 +71,44 @@ def login(request, params):
 
 
 def logout(request, params):
-
     token = Token.objects.filter(user=request.user).first()
     if token:
         token.delete()
     return custom_response(True, message=MESSAGE['LogedOut'])
+
+
+def user_update(request, params):
+    nott = 'password' if 'password' not in params else 'new_password' if 'new_password' not in params else ''
+    if nott:
+        custom_response(True, error_msg_unfilled(nott))
+    if not request.user.check_password(params['password']):
+        return custom_response(True, message={"Error": "Parol noto'g'ri"})
+
+    if request.user.check_password(params['new_password']):
+        return custom_response(True, message={"Error": "Parol eskisi bilan teng bo'lishi kerek emas"})
+
+    if len(str(params['new_password'])) < 6 or params['new_password'].isalnum() or ' ' in params['new_password']:
+        return custom_response(True, message=MESSAGE['ParamsNotFull'])
+    request.user.set_password(params['new_password'])
+    request.user.save()
+
+    user = User.objects.filter(phone=params['phone']).first()
+
+    if type(params['phone']) is not int or len(str(params['phone'])) < 12:
+        error_msg = f"'{params['phone']}' phone 👈 12ta raqam"
+        return custom_response(True, message=error_params_unfilled(error_msg))
+    if user and user.id != request.user.id:
+        return custom_response(True, message={"Error": "Bunaqa user band qilingan"})
+
+    request.user.phone = params.get('phone', request.user.phone)
+    request.user.username = params.get('username', request.user.phone)
+    # request.user.email = params.get('email', request.user.email)
+    request.user.last_name = params.get('last_name', request.user.last_name)
+    request.user.save()
+    return custom_response(True, message={"Succes": "User update qilindi"})
+
+    # if 'password' not in data or 'new_password' not in data:
+    #     return custom_response()
 
 
 def user_delete(request, params):
@@ -93,8 +126,6 @@ def StepOne(request, params):
         if type(params['phone']) is not int or len(str(params['phone'])) < 12:
             error_msg = f"'{params['phone']}' phone 👈 12ta raqam"
             return custom_response(True, message=error_params_unfilled(error_msg))
-
-
 
     code = random.randint(100000, 999999)
     sms = send_sms(otp=code, phone=params['phone'])
@@ -140,12 +171,9 @@ def StepTwo(request, params):
 
     now = datetime.datetime.now(datetime.timezone.utc)
 
-
     if (now - token.create).total_seconds() > 18000:
-
         token.is_expire = True
         token.save()
-
 
         return custom_response(False, message=MESSAGE['TokenUnUsable'])
 
@@ -154,7 +182,6 @@ def StepTwo(request, params):
         token.tires += 1
         token.save()
         return custom_response(True, message=MESSAGE['TokenUnUsable'])
-
 
     token.is_conf = True
     user = User.objects.filter(phone=token.phone).first()

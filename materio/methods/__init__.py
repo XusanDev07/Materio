@@ -1,1 +1,1 @@
-from materio.methods.auth import regis, login, StepOne, StepTwo, logout
+from materio.methods.auth import regis, login, StepOne, StepTwo, logout, user_update, user_delete
