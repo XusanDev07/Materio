@@ -90,7 +90,7 @@ def StepOne(request, params):
         return custom_response(True, message=error_msg_unfilled(not_data))
 
     if 'phone' in params:
-        if type(params['phone']) is not int and len(str(params['phone'])) < 12:
+        if type(params['phone']) is not int or len(str(params['phone'])) < 12:
             error_msg = f"'{params['phone']}' phone 👈 12ta raqam"
             return custom_response(True, message=error_params_unfilled(error_msg))
 
