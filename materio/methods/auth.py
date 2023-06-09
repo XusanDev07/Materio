@@ -107,8 +107,7 @@ def user_update(request, params):
     request.user.save()
     return custom_response(True, message={"Succes": "User update qilindi"})
 
-    # if 'password' not in data or 'new_password' not in data:
-    #     return custom_response()
+
 
 
 def user_delete(request, params):
