@@ -35,14 +35,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class OTP(models.Model):
-    phone = models.CharField(max_length=20)
+    email = models.CharField(max_length=20)
     key = models.CharField(max_length=512)
 
     is_conf = models.BooleanField(default=False)
     is_expire = models.BooleanField(default=False)
     tries = models.SmallIntegerField(default=0)
 
-    create = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
